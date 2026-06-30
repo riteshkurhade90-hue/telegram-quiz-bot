@@ -118,7 +118,7 @@ async def send_daily_quiz():
             options=options,
             type=PollType.QUIZ,
             correct_option_id=correct_option,
-            is_anonymous=False,
+            is_anonymous=True,
             explanation=explanation,
             open_period=600
         )
