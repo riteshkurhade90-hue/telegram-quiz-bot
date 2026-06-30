@@ -62,6 +62,12 @@ def get_questions(day):
 
     for row in rows:
 
+        if len(row) < 8:
+            continue
+
+        if str(row[0]) == str(day):
+            questions.append(row)
+
     return questions[:QUESTIONS_PER_DAY]
 
 
