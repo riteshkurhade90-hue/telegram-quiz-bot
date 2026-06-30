@@ -56,3 +56,25 @@ def get_today_question():
         f.write(str(index))
 
     return question
+    def build_message(question):
+    return (
+        "📚 <b>MPSC Daily Quiz</b>\n\n"
+        f"{question}\n\n"
+        "━━━━━━━━━━━━━━━\n"
+        "📢 Join our Telegram channel for more daily MPSC questions!"
+    )
+
+
+def main():
+    question = get_today_question()
+
+    if question == "❌ No questions found.":
+        send_message(question)
+        return
+
+    message = build_message(question)
+    send_message(message)
+
+
+if __name__ == "__main__":
+    main()
