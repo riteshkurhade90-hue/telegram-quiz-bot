@@ -27,3 +27,4 @@ jobs:
           GOOGLE_CREDS: ${{ secrets.GOOGLE_CREDS }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
         run: python bot.py
+# test
