@@ -120,7 +120,6 @@ async def send_daily_quiz():
             correct_option_id=correct_option,
             is_anonymous=True,
             explanation=explanation,
-            open_period=600
         )
 
         await asyncio.sleep(3)
