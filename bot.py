@@ -1,80 +1,73 @@
 import os
-import requests
+import json
+import asyncio
+from telegram import Bot
+from telegram.constants import PollType
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+BOT_TOKEN = os.environ["BOT_TOKEN"]
+CHAT_ID = os.environ["CHAT_ID"]
+SHEET_ID = os.environ["SHEET_ID"]
 
-QUESTION_FILE = "questions.txt"
+creds = Credentials.from_service_account_info(
+    json.loads(os.environ["GOOGLE_CREDENTIALS"]),
+    scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"],
+)
 
-
-def send_message(text):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
-    data = {
-        "chat_id": CHAT_ID,
-        "text": text,
-        "parse_mode": "HTML"
-    }
-
-    response = requests.post(url, data=data)
-    print(response.text)
-
-
-def load_questions():
-    if not os.path.exists(QUESTION_FILE):
-        return []
-
-    with open(QUESTION_FILE, "r", encoding="utf-8") as f:
-        content = f.read().strip()
-
-    questions = content.split("\n---\n")
-    return questions
+service = build("sheets", "v4", credentials=creds)
+sheet = service.spreadsheets()
+bot = Bot(BOT_TOKEN)
 
 
-def get_today_question():
-    questions = load_questions()
+def get_questions():
+    result = sheet.values().get(
+        spreadsheetId=SHEET_ID,
+        range="Sheet1!A2:H11"
+    ).execute()
 
-    if len(questions) == 0:
-        return "❌ No questions found."
+    return result.get("values", [])
+    async def send_quiz():
+    questions = get_questions()
 
-    index_file = "index.txt"
+    for row in questions:
+        if len(row) < 8:
+            continue
 
-    if os.path.exists(index_file):
-        with open(index_file, "r") as f:
-            index = int(f.read())
-    else:
-        index = 0
+        question = row[1]
+        options = [row[2], row[3], row[4], row[5]]
+        correct_option = int(row[6])
 
-    question = questions[index]
+        await bot.send_poll(
+            chat_id=CHAT_ID,
+            question=question,
+            options=options,
+            type=PollType.QUIZ,
+            correct_option_id=correct_option,
+            is_anonymous=False,
+            explanation=row[7],
+        )
 
-    index += 1
+        await asyncio.sleep(30)
+        async def send_quiz():
+    questions = get_questions()
 
-    if index >= len(questions):
-        index = 0
+    for row in questions:
+        if len(row) < 8:
+            continue
 
-    with open(index_file, "w") as f:
-        f.write(str(index))
+        question = row[1]
+        options = [row[2], row[3], row[4], row[5]]
+        correct_option = int(row[6])
 
-    return question
-    def build_message(question):
-    return (
-        "📚 <b>MPSC Daily Quiz</b>\n\n"
-        f"{question}\n\n"
-        "━━━━━━━━━━━━━━━\n"
-        "📢 Join our Telegram channel for more daily MPSC questions!"
-    )
+        await bot.send_poll(
+            chat_id=CHAT_ID,
+            question=question,
+            options=options,
+            type=PollType.QUIZ,
+            correct_option_id=correct_option,
+            is_anonymous=False,
+            explanation=row[7],
+        )
 
-
-def main():
-    question = get_today_question()
-
-    if question == "❌ No questions found.":
-        send_message(question)
-        return
-
-    message = build_message(question)
-    send_message(message)
-
-
-if __name__ == "__main__":
-    main()
+        await asyncio.sleep(30)
