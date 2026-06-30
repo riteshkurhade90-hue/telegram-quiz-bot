@@ -62,14 +62,10 @@ def get_questions(day):
 
     for row in rows:
 
-        if len(row) < 8:
-            continue
-
-        if str(row[0]) == str(day):
-            questions.append(row)
-
     return questions[:QUESTIONS_PER_DAY]
-    async def send_daily_quiz():
+
+
+async def send_daily_quiz():
 
     day = get_day_number()
 
@@ -122,20 +118,21 @@ def get_questions(day):
         )
 
         await asyncio.sleep(3)
-        async def main():
+
+    await bot.send_message(
+        chat_id=CHAT_ID,
+        text=(
+            "✅ आजची Quiz पूर्ण झाली.\n\n"
+            "📚 उद्या दुपारी 3:00 वाजता पुढील Topic ची Quiz आपोआप येईल.\n\n"
+            "🎯 All the Best!"
+        )
+    )
+
+
+async def main():
 
     try:
-
         await send_daily_quiz()
-
-        await bot.send_message(
-            chat_id=CHAT_ID,
-            text=(
-                "✅ आजची Quiz पूर्ण झाली.\n\n"
-                "📚 उद्या दुपारी 3:00 वाजता पुढील Topic ची Quiz आपोआप येईल.\n\n"
-                "🎯 All the Best!"
-            )
-        )
 
     except Exception as e:
 
