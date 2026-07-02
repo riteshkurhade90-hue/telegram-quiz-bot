@@ -32,7 +32,7 @@ START_DATE = datetime(2026, 7, 1)
 
 SHEET_NAME = "Sheet1"
 
-QUESTIONS_PER_DAY = 10
+QUESTIONS_PER_DAY = 25
 
 # ------------------------------
 
